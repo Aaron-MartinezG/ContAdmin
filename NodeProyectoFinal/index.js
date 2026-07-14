@@ -30,6 +30,22 @@ app.post('/clientes', (req, res) => {
   })
 })
 
+// Endpoint para obtener clientes por id
+app.get('/clientes/:id', (req, res) => {
+  const { id } = req.params;
+  const sql = `
+        SELECT c.id_cliente AS id, c.nombre, c.empresa, c.correo, c.telefono, c.rfc, c.honorarios_mensuales, c.fecha_inicio, c.activo, c.id_servicio
+        FROM clientes c
+        WHERE c.id_cliente = ?
+  `;
+  connection.query(sql, [id], (err, result) => {
+    if(err){ return res.status(500).json({mensaje:"Error al traer los datos"}); }
+    // Si no encontró nada
+    if(result.length === 0) { return res.status(404).json({mensaje: "Cliente no encontrado"}); }
+    res.status(200).json(result[0]);
+  })
+})
+
 // Endpoint para obtener todos los clientes
 app.get('/clientes', (req, res) => {
   const sql = `
@@ -66,6 +82,20 @@ app.post('/facturas', (req, res) => {
   })
 })
 
+// Endpoint para obtener facturas por id
+app.get('/facturas/:id', (req, res) => {
+  const { id } = req.params;
+  const sql = `
+        SELECT * FROM facturas WHERE id_factura = ?
+  `;
+  connection.query(sql, [id], (err, result) => {
+    if(err){ return res.status(500).json({mensaje:"Error al traer los datos"}); }
+    // Si no encontró nada
+    if(result.length === 0) { return res.status(404).json({mensaje: "Factura no encontrada"}); }
+    res.status(200).json(result[0]);
+  })
+})
+
 // Endpoint para obtener todas las facturas
 app.get('/facturas', (req, res) => {
   const sql = `SELECT * FROM facturas`;
@@ -79,7 +109,7 @@ app.get('/facturas', (req, res) => {
   });
 });
 
-//Definimos el endpoint para guardar servicios
+//E ndpoint para guardar servicios
 app.post('/servicios', (req, res) => {
   const { nombre, descripcion, precio_base } = req.body;
 
@@ -98,6 +128,22 @@ app.post('/servicios', (req, res) => {
       message: 'Registro exitoso.',
       id: result.insertId
     })
+  })
+})
+
+// Endpoint para obtener servicios por id
+app.get('/servicios/:id', (req, res) => {
+  const { id } = req.params;
+  const sql = `
+        SELECT id_servicio AS id, nombre, descripcion, precio_base
+        FROM servicios
+        WHERE id_servicio = ?
+  `;
+  connection.query(sql, [id], (err, result) => {
+    if(err){ return res.status(500).json({mensaje:"Error al traer los datos"}); }
+    // Si no encontró nada
+    if(result.length === 0) { return res.status(404).json({mensaje: "Servicio no encontrado"}); }
+    res.status(200).json(result[0]);
   })
 })
 
