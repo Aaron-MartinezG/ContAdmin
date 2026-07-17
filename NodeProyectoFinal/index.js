@@ -60,6 +60,46 @@ app.get('/clientes', (req, res) => {
   });
 });
 
+// Endpoint para actualizar clientes
+app.put('/clientes/:id', (req, res) => {
+  const { id } = req.params; // Corrección: req.params, no req.params.id
+  const { nombre, empresa, correo, telefono, rfc, honorarios_mensuales, fecha_inicio, activo, id_servicio } = req.body;
+
+  const sql = `
+    UPDATE clientes
+    SET nombre = ?, empresa = ?, correo = ?, telefono = ?, rfc = ?, honorarios_mensuales = ?, fecha_inicio = ?, activo = ?, id_servicio = ?
+    WHERE id_cliente = ?
+  `;
+
+  connection.query(sql, [nombre, empresa, correo, telefono, rfc, honorarios_mensuales, fecha_inicio, activo, id_servicio, id], (err, result) => {
+    if (err) {
+      console.error('Error al actualizar en MySQL', err);
+      return res.status(500).json({ message: 'Error actualizando en la base de datos', details: err.sqlMessage });
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Cliente no encontrado' });
+    }
+    res.status(200).json({ message: 'Cliente actualizado exitosamente' });
+  });
+});
+
+// Endpoint para eliminar un cliente
+app.delete('/clientes/:id', (req, res) => {
+  const { id } = req.params;
+  const sql = `DELETE FROM clientes WHERE id_cliente = ?`;
+
+  connection.query(sql, [id], (err, result) => {
+    if (err) {
+      console.error('Error al eliminar en MySQL', err);
+      return res.status(500).json({ message: 'Error eliminando en la base de datos', details: err.sqlMessage });
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Cliente no encontrado' });
+    }
+    res.status(200).json({ message: 'Cliente eliminado exitosamente' });
+  });
+});
+
 //Endpoint para guardar facturas
 app.post('/facturas', (req, res) => {
   const { id_cliente, folio, fecha_emision, fecha_pago, monto, estado } = req.body;
@@ -109,7 +149,47 @@ app.get('/facturas', (req, res) => {
   });
 });
 
-//E ndpoint para guardar servicios
+// Endpoint para actualizar una factura
+app.put('/facturas/:id', (req, res) => {
+  const { id } = req.params;
+  const { id_cliente, folio, fecha_emision, fecha_pago, monto, estado } = req.body;
+
+  const sql = `
+    UPDATE facturas
+    SET id_cliente = ?, folio = ?, fecha_emision = ?, fecha_pago = ?, monto = ?, estado = ?
+    WHERE id_factura = ?
+  `;
+
+  connection.query(sql, [id_cliente, folio, fecha_emision, fecha_pago, monto, estado, id], (err, result) => {
+    if (err) {
+      console.error('Error al actualizar en MySQL', err);
+      return res.status(500).json({ message: 'Error actualizando en la base de datos', details: err.sqlMessage });
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Factura no encontrada' });
+    }
+    res.status(200).json({ message: 'Factura actualizada exitosamente' });
+  });
+});
+
+// Endpoint para eliminar una factura
+app.delete('/facturas/:id', (req, res) => {
+  const { id } = req.params;
+  const sql = `DELETE FROM facturas WHERE id_factura = ?`;
+
+  connection.query(sql, [id], (err, result) => {
+    if (err) {
+      console.error('Error al eliminar en MySQL', err);
+      return res.status(500).json({ message: 'Error eliminando en la base de datos', details: err.sqlMessage });
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Factura no encontrada' });
+    }
+    res.status(200).json({ message: 'Factura eliminada exitosamente' });
+  });
+});
+
+//Endpoint para guardar servicios
 app.post('/servicios', (req, res) => {
   const { nombre, descripcion, precio_base } = req.body;
 
@@ -157,6 +237,46 @@ app.get('/servicios', (req, res) => {
     }
 
     res.status(200).json(result);
+  });
+});
+
+// Endpoint para actualizar un servicio
+app.put('/servicios/:id', (req, res) => {
+  const { id } = req.params;
+  const { nombre, descripcion, precio_base } = req.body;
+
+  const sql = `
+    UPDATE servicios
+    SET nombre = ?, descripcion = ?, precio_base = ?
+    WHERE id_servicio = ?
+  `;
+
+  connection.query(sql, [nombre, descripcion, precio_base, id], (err, result) => {
+    if (err) {
+      console.error('Error al actualizar en MySQL', err);
+      return res.status(500).json({ message: 'Error actualizando en la base de datos', details: err.sqlMessage });
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Servicio no encontrado' });
+    }
+    res.status(200).json({ message: 'Servicio actualizado exitosamente' });
+  });
+});
+
+// Endpoint para eliminar un servicio
+app.delete('/servicios/:id', (req, res) => {
+  const { id } = req.params;
+  const sql = `DELETE FROM servicios WHERE id_servicio = ?`;
+
+  connection.query(sql, [id], (err, result) => {
+    if (err) {
+      console.error('Error al eliminar en MySQL', err);
+      return res.status(500).json({ message: 'Error eliminando en la base de datos', details: err.sqlMessage });
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Servicio no encontrado' });
+    }
+    res.status(200).json({ message: 'Servicio eliminado exitosamente' });
   });
 });
 
