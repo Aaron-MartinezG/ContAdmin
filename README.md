@@ -1,4 +1,4 @@
-# Accounting Management System
+# ContAdmin: Accounting Management System
 
 A full-stack web application for accounting management built with the **MEAN Stack** (MySQL, Express, Angular, Node.js). This project provides a robust and intuitive interface to manage clients, invoices, and accounting services, complete with a fully functional REST API.
 
