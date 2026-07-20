@@ -22,4 +22,19 @@ export class FacturaService {
     obtenerFacturas(): Observable<Factura[]> {
       return this.http.get<Factura[]>(`${this.apiURL}/facturas`);
     }
+
+    // MÉTODO GET: Para obtener una factura por id
+    obtenerPorId(id: number): Observable<Factura> {
+      return this.http.get<Factura>(`${this.apiURL}/facturas/${id}`);
+    }
+
+    // MÉTODO PUT: Para actualizar una factura
+    actualizar(id: number, facturaData: Factura): Observable<any> {
+      return this.http.put<any>(`${this.apiURL}/facturas/${id}`, facturaData);
+    }
+
+    // MÉTODO DELETE: Para eliminar una factura
+    eliminar(id: number): Observable<any> {
+      return this.http.delete<any>(`${this.apiURL}/facturas/${id}`);
+    }
 }

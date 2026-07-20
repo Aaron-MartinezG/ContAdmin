@@ -23,5 +23,10 @@ export const routes: Routes = [
   {path: 'listaServicios', component: ListaServicios},
   {path: 'altaServicios', component: AltaServicio},
 
+  // Rutas para edición reutilizando los componentes de alta
+  { path: 'editarCliente/:id', component: AltaClienteComponent },
+  { path: 'editarFactura/:id', component: AltaFactura },
+  { path: 'editarServicio/:id', component: AltaServicio },
+
   { path: '**', redirectTo: 'login' }
 ];

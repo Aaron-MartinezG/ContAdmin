@@ -6,6 +6,8 @@ import { ClienteService } from '../../../services/cliente-service';
 import { Factura } from '../../../models/factura.model';
 import { Cliente } from '../../../models/cliente.model';
 import { HttpErrorResponse } from '@angular/common/http';
+import { ActivatedRoute, Router } from '@angular/router';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-alta-factura',
@@ -20,14 +22,43 @@ export class AltaFactura implements OnInit {
 
   mensajeExito: string | null = null;
   mensajeError: string | null = null;
+  idActual: number | null = null;
 
   constructor(
     private facturaService: FacturaService,
-    private clienteService: ClienteService
+    private clienteService: ClienteService,
+    private route: ActivatedRoute,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
     this.cargarClientes();
+
+    this.route.paramMap.subscribe(params => {
+      const id = params.get('id');
+      if (id) {
+        this.idActual = Number(id);
+        this.cargarFacturaParaEdicion(this.idActual);
+      }
+    });
+  }
+
+  cargarFacturaParaEdicion(id: number) {
+    this.facturaService.obtenerPorId(id).subscribe({
+      next: (data) => {
+        if(data.fecha_emision) {
+          data.fecha_emision = new Date(data.fecha_emision).toISOString().substring(0, 10);
+        }
+        if(data.fecha_pago) {
+          data.fecha_pago = new Date(data.fecha_pago).toISOString().substring(0, 10);
+        }
+        this.model = data;
+      },
+      error: (err) => {
+        Swal.fire('Error', 'No se pudo cargar la factura para editar', 'error');
+        this.router.navigate(['/listaFacturas']);
+      }
+    });
   }
 
   cargarClientes() {
@@ -62,17 +93,28 @@ export class AltaFactura implements OnInit {
 
     this.model.id_cliente = Number(this.model.id_cliente);
 
-    this.facturaService.registrarFactura(this.model).subscribe({
-      next: (res) => {
-        this.mensajeExito = 'Factura registrada con éxito.';
-        this.mensajeError = null;
-        this.model = this.resetModel();
-        form.resetForm(this.model);
-      },
-      error: (err: HttpErrorResponse) => {
-        this.mensajeError = `Error al registrar: ${err.error?.message || err.message}`;
-        this.mensajeExito = null;
-      }
-    });
+    if (this.idActual) {
+      // MODO EDICIÓN
+      this.facturaService.actualizar(this.idActual, this.model).subscribe({
+        next: () => {
+          Swal.fire('¡Actualizada!', 'La factura se actualizó correctamente.', 'success');
+          this.router.navigate(['/listaFacturas']);
+        },
+        error: (err) => {
+          this.mensajeError = `Error al actualizar: ${err.error?.message || err.message}`;
+        }
+      });
+    } else {
+      // MODO CREACIÓN
+      this.facturaService.registrarFactura(this.model).subscribe({
+        next: (res) => {
+          Swal.fire('¡Registrada!', 'Factura registrada con éxito.', 'success');
+          this.router.navigate(['/listaFacturas']);
+        },
+        error: (err: HttpErrorResponse) => {
+          this.mensajeError = `Error al registrar: ${err.error?.message || err.message}`;
+        }
+      });
+    }
   }
 }

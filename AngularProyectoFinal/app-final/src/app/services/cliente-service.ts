@@ -23,4 +23,19 @@ export class ClienteService {
   obtenerClientes(): Observable<Cliente[]> {
     return this.http.get<Cliente[]>(`${this.apiURL}/clientes`);
   }
+
+  // MÉTODO GET: Para obtener un cliente por id
+  obtenerPorId(id: number): Observable<Cliente> {
+    return this.http.get<Cliente>(`${this.apiURL}/clientes/${id}`);
+  }
+
+  // MÉTODO PUT: Para actualizar un cliente
+  actualizar(id: number, clienteData: Cliente): Observable<any> {
+    return this.http.put<any>(`${this.apiURL}/clientes/${id}`, clienteData);
+  }
+
+  // MÉTODO DELETE: Para eliminar un cliente
+  eliminar(id: number): Observable<any> {
+    return this.http.delete<any>(`${this.apiURL}/clientes/${id}`);
+  }
 }

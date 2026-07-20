@@ -4,6 +4,7 @@ import { Factura } from '../../../models/factura.model';
 import { FacturaService } from '../../../services/factura-service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { RouterLink } from '@angular/router';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-lista-facturas',
@@ -42,5 +43,33 @@ export class ListaFacturas implements OnInit {
           this.cargando.set(false);
         }
       })
+    }
+
+    eliminar(id: number | undefined) {
+      if (!id) return;
+
+      Swal.fire({
+        title: '¿Estás seguro?',
+        text: "No podrás revertir esto",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.facturaService.eliminar(id).subscribe({
+            next: () => {
+              Swal.fire('¡Eliminada!', 'La factura ha sido eliminada.', 'success');
+              this.loadFacturas(); // Recargar la lista
+            },
+            error: (err) => {
+              console.error('Error al eliminar factura', err);
+              Swal.fire('Error', 'Hubo un problema al eliminar la factura.', 'error');
+            }
+          });
+        }
+      });
     }
 }

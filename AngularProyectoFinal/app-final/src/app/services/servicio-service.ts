@@ -22,4 +22,19 @@ export class ServicioService {
   obtenerServicios(): Observable<Servicio[]> {
     return this.http.get<Servicio[]>(`${this.apiURL}/servicios`);
   }
+
+  // MÉTODO GET: Para obtener un servicio por id
+  obtenerPorId(id: number): Observable<Servicio> {
+    return this.http.get<Servicio>(`${this.apiURL}/servicios/${id}`);
+  }
+
+  // MÉTODO PUT: Para actualizar un servicio
+  actualizar(id: number, servicioData: Servicio): Observable<any> {
+    return this.http.put<any>(`${this.apiURL}/servicios/${id}`, servicioData);
+  }
+
+  // MÉTODO DELETE: Para eliminar un servicio
+  eliminar(id: number): Observable<any> {
+    return this.http.delete<any>(`${this.apiURL}/servicios/${id}`);
+  }
 }

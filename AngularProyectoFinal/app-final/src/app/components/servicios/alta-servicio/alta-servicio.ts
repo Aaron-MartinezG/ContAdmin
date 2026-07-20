@@ -3,7 +3,9 @@ import { FormsModule, NgForm } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ServicioService } from '../../../services/servicio-service';
 import { Servicio } from '../../../models/servicio.model';
-import { HttpErrorResponse } from '@angular/common/http'; // Importar para tipado de errores
+import { HttpErrorResponse } from '@angular/common/http';
+import { ActivatedRoute, Router } from '@angular/router';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-alta-servicio',
@@ -17,11 +19,34 @@ export class AltaServicio implements OnInit {
   model: Servicio = this.resetModel();
   mensajeExito: string | null = null;
   mensajeError: string | null = null;
+  idActual: number | null = null;
 
-  constructor(private servicioService: ServicioService) { }
+  constructor(
+    private servicioService: ServicioService,
+    private route: ActivatedRoute,
+    private router: Router
+  ) { }
 
   ngOnInit(): void {
-    // Inicialización
+    this.route.paramMap.subscribe(params => {
+      const id = params.get('id');
+      if (id) {
+        this.idActual = Number(id);
+        this.cargarServicioParaEdicion(this.idActual);
+      }
+    });
+  }
+
+  cargarServicioParaEdicion(id: number) {
+    this.servicioService.obtenerPorId(id).subscribe({
+      next: (data) => {
+        this.model = data;
+      },
+      error: (err) => {
+        Swal.fire('Error', 'No se pudo cargar el servicio para editar', 'error');
+        this.router.navigate(['/listaServicios']);
+      }
+    });
   }
 
   resetModel(): Servicio {
@@ -43,17 +68,28 @@ export class AltaServicio implements OnInit {
 
     const nuevoServicio: Servicio = this.model;
 
-    // Llama al servicio POST para enviar los datos a Node.js
-    this.servicioService.registrarServicio(nuevoServicio).subscribe({
-      next: (response: any) => {
-        this.mensajeExito = `Servicio '${nuevoServicio.nombre}' registrado con éxito.`;
-        this.model = this.resetModel();
-        form.resetForm(this.model);
-      },
-      error: (err: HttpErrorResponse) => {
-        console.error('Error al registrar servicio:', err);
-        this.mensajeError = `Error: ${err.error?.message || 'Error al conectar con el servidor.'}`;
-      }
-    });
+    if (this.idActual) {
+      // MODO EDICIÓN
+      this.servicioService.actualizar(this.idActual, nuevoServicio).subscribe({
+        next: () => {
+          Swal.fire('¡Actualizado!', 'El servicio se actualizó correctamente.', 'success');
+          this.router.navigate(['/listaServicios']);
+        },
+        error: (err) => {
+          this.mensajeError = `Error al actualizar: ${err.error?.message || err.message}`;
+        }
+      });
+    } else {
+      // MODO CREACIÓN
+      this.servicioService.registrarServicio(nuevoServicio).subscribe({
+        next: (response: any) => {
+          Swal.fire('¡Registrado!', `Servicio '${nuevoServicio.nombre}' registrado con éxito.`, 'success');
+          this.router.navigate(['/listaServicios']);
+        },
+        error: (err: HttpErrorResponse) => {
+          this.mensajeError = `Error al registrar: ${err.error?.message || err.message}`;
+        }
+      });
+    }
   }
 }
