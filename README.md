@@ -1,8 +1,8 @@
-# Accounting Management System 💼
+# Accounting Management System
 
 A full-stack web application for accounting management built with the **MEAN Stack** (MySQL, Express, Angular, Node.js). This project provides a robust and intuitive interface to manage clients, invoices, and accounting services, complete with a fully functional REST API.
 
-## 🚀 Features
+## Features
 
 * **Full CRUD Operations:** Create, Read, Update, and Delete records seamlessly across the platform.
 * **Client Management:** Register clients, link them to specific accounting services, and track their active status and monthly fees.
@@ -12,7 +12,7 @@ A full-stack web application for accounting management built with the **MEAN Sta
 * **Smart Notifications:** Integrated with SweetAlert2 for elegant confirmation modals and success/error alerts.
 * **Component Reusability:** Efficient Angular architecture using `ActivatedRoute` to recycle forms for both creation and edition modes.
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 * **Frontend:** Angular 17+, TypeScript, Bootstrap, SweetAlert2
 * **Backend:** Node.js, Express.js, CORS
@@ -60,5 +60,5 @@ To run this project locally, follow these steps:
    ```
 4. Open your browser and navigate to `http://localhost:4200/`.
 
-## 🤝 Contact
+## Contact
 Created by Aaron Martinez G. Feel free to reach out on LinkedIn!
